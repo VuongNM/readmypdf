@@ -1,0 +1,53 @@
+{% extends "shared/_layout.html" %}
+
+{% block main_content %}
+    <div class="flex items-center justify-center h-100  ">
+        <br>
+            <p class="text-cyan-800 text-2xl">Browse Books</p>
+        <br>
+    </div>
+
+    </form>
+
+    <div id="search-results" class="flex flex-rown gap-3 flex-wrap justify-center content-center text-center w-full">
+
+        {% for book in books %}
+            <div id="{{book['id']}}" class="flex flex-col bg-amber-100 hover:bg-amber-200 transition-colors ease-in-out content-center text-center basis-1/4 w-full h-100 py-5">
+                <span class="py-1 uppercase font-bold"><a href="/book?id={{ book.id }}" class="text-cyan-800 hover:text-cyan-600"> {{book.name}} </a></span>
+                <span class="px-1 text-xs text-slate-500 font-bold uppercase">By</span>
+                <div id="hello" class="flex flex-col flex-wrap h-5/6 py-2">
+                    <span class="px-1 text-sm text-slate-600">{{book.author}}</span>
+                </div>
+                <div  class="flex justify-center ">
+                    <img  class="hover:scale-125 transition duration-500 cursor-pointer" src="{{ book.thumbnail }}">
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="flex flex-col bg-amber-100 hover:bg-amber-200 transition-colors ease-in-out content-center text-center basis-1/4 w-full h-100 py-5">
+            <span class="py-1 uppercase font-bold text-cyan-800 text-center"> Add A Book </span>
+            <div class="py-1 text-left">
+                <form method="post" enctype="multipart/form-data" action="book" class="px-10">
+                    <span>
+                    <label for="bookname">Book name:</label>
+                    <input type="text" id="bookname" name="name" placeholder="  Your book name ..." class=" w-full h-8">
+                    </span>
+                    <br>
+                    <br>
+                    <input type="file" id="file" name="file" class="bg--400 file:border file:border-solid">
+                    <br>
+                    <br>
+                    <button class=" bg-amber-400 block w-full h-8 ">
+                        Upload
+                    </button>
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+
+{% endblock main_content %}
+    

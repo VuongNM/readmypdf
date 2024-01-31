@@ -1,0 +1,10 @@
+{% block booktitle %}
+    <div hx-target="this" hx-swap="outerHTML" class="flex mx-auto items-center justify-center width-screen h-20 border-2     ">
+
+        <button hx-get="/bookedit?id={{book.id}}" class="btn btn-primary">
+            <p class="w-screen text-2xl  justify-center">{{ book.name }} - {{ book.author}}   </p>    
+
+        </button>
+    </div>
+
+{%  endblock %}

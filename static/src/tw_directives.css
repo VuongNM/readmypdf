@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'garamond';
+  src: local('garamond'), url(./static/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf) format('ttf');
+}
