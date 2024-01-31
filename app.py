@@ -4,7 +4,7 @@ import sys
 # from data.database import get_db, query_db, close_connection, insert
 
 from flask_sqlalchemy import SQLAlchemy
-from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER
+from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER, AUDIO_FOLDER
 from utils import *
 
 import flask
@@ -15,6 +15,7 @@ app = flask.Flask('app')
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_LOCAITON
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
+app.config['AUDIO_FOLDER'] = AUDIO_FOLDER
 
 db = SQLAlchemy(app)
 
@@ -22,9 +23,10 @@ db = SQLAlchemy(app)
 
 
 def register_blueprint():
-    from views import catalog, book
+    from views import catalog, book, audio
     app.register_blueprint(catalog.blueprint)
     app.register_blueprint(book.blueprint)
+    app.register_blueprint(audio.blueprint)
 
 
 def configure():

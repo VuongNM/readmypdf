@@ -14,6 +14,7 @@
     <div class="w-full h-full items-center justify-center">
 
         {% for page, page_content in book['content'].items() %}
+            {% include "book/player.html" %}
             {% include "book/bookpage.html" %}
         {% endfor %}
 
