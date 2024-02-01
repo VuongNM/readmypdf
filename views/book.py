@@ -26,10 +26,13 @@ def book():
     if request.method == 'GET':
         _id = request.args.get('id', '')
 
-        book = Book.query.filter(Book.id== _id).first().to_dict()
-        book['content'] =  json.loads(book['content'])
+        book = Book.query.filter(Book.id== _id).first()
 
         if book is not None:
+            book = book.to_dict()
+
+            book['content'] =  json.loads(book['content'])
+
             return render_template('book/book.html', book=book, render_text=render_text)
         else:
             return render_template('404.html'), 404

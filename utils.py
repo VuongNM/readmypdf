@@ -20,8 +20,15 @@ def render_text(text):
         if len(l) < 0.8 * avg_len and l.endswith('.'):
            l += '\n\n'
         rendered += l,
-    return '\n'.join(rendered)
 
+
+    text = '\n'.join(rendered)
+    # return the text with original line breaking
+    # return text
+    paragraph = text.split('\n\n')
+    paragraph = [p.replace('\n', '') for p in paragraph]
+
+    return '\n\n'.join(paragraph)
 
 ALLOWED_EXTENSIONS = {'pdf', 'PDF'}
 
