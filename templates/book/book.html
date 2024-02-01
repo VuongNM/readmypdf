@@ -5,18 +5,18 @@
 
 {% include "book/booktitle.html" %}
 
-    <div class="relative flex flex-grow border-3 scroller">
-        <div class="w-1/2 h-[75rem] scroller">
-            <iframe src="{{ book.path }}" class="w-full h-[76rem] scroller"/> </iframe>
+    <div class="relative flex flex-grow border-3">
+        <div class="w-1/2 h-[75rem]">
+            <embed src="{{ book.path }}" height="242352px"  class="w-full h-[76rem] scrollframe"/> </embed> 
         </div>
 
         <div class="w-1/2 overflow-y-auto scroller">
             <div class="w-full h-[76rem] items-center justify-center">
                 {% for page, page_content in book['content'].items() %}
-                    <div class="w-full min-h-[76rem] border-x-8 border-y-20 px-20 py-20">
+                    <div class="w-full min-h-[76rem] border-x-8 border-y-20 p-[10%]">
                         {% include "book/player.html" %}
 
-                        <div class="place-content-center overflow-y-auto justify-center px-20 py-20 border-2 min-h-[55rem]">
+                        <div class="place-content-center overflow-y-auto justify-center p-[10%] border-2 min-h-[55rem]">
                                 <p class="whitespace-pre-line text-justify align-middle px-20 leading-8 justify-center "> 
                                 {{ page_content.text }} 
                                 </p>
