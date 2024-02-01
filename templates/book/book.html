@@ -5,21 +5,34 @@
 
 {% include "book/booktitle.html" %}
 
+    <div class="relative flex flex-grow border-3">
+        <div class="w-1/2 h-[75rem]">
+            <embed src="{{ book.path }}" class="w-full h-[76rem]"/>
+        </div>
 
-    <div class="text-blue-600 float-left w-1/2 h-screen px-3 py-3">
-    <embed src="{{ book.path }}" class="w-full h-full pointer-events-all "/>
+        <div class="w-1/2 overflow-y-auto">
+            <div class="w-full h-[76rem] items-center justify-center">
+                {% for page, page_content in book['content'].items() %}
+                    <div class="w-full min-h-[76rem] border-x-8">
+                        {% include "book/player.html" %}
+
+                        <div class="place-content-center overflow-y-auto justify-center px-20 py-20">
+                                <p class="whitespace-pre-line align-middle px-20 leading-8 justify-center"> 
+                                {{ page_content.text }} 
+                                </p>
+                        </div>
+
+
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
     </div>
 
-    <div class="float-left w-1/2 px-3 py-3 h-screen overflow-scroll pb-8">
-    <div class="w-full h-full items-center justify-center">
 
-        {% for page, page_content in book['content'].items() %}
-            {% include "book/player.html" %}
-            {% include "book/bookpage.html" %}
-        {% endfor %}
-
-    </div>
-    </div>
 
 
 {% endblock main_content %}

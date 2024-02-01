@@ -8,14 +8,14 @@
     {% else %}
         <form hx-get="/player?id={{ book.id }}&page={{ page }}">
 
-        <button class="btn btn-primary" >
+        
             {% if message is defined %}
-                {{ message }}
+                <button class="btn btn-primary" > Read this page </button >
+                 <span class="popuptext" id="myPopup">A Simple Popup!</span>
             {% else %}
-                Read this page
+                <button class="btn btn-primary" > Read this page </button >
             {% endif %}
 
-        </button >
     </form>
     {% endif %}
     
