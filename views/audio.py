@@ -13,7 +13,7 @@ def player():
     _id = request.args['id']
     page = request.args['page'] 
 
-    file_exists  = False
+    file_exists  = True
     if file_exists:
         return render_template('book/player.html', audio=True, id=_id, page=page)
     else:

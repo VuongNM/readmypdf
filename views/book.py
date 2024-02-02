@@ -1,7 +1,7 @@
 
 
 import flask
-from flask import Flask, render_template, request, redirect, current_app as app
+from flask import Flask, render_template, request, redirect, current_app as app, send_file
 from app import db
 
 from data.database import Book
@@ -10,6 +10,9 @@ from datetime import datetime
 import fitz
 import json
 from pdf2image import convert_from_path
+import io
+from PyPDF2 import PdfReader
+from PyPDF2 import PdfWriter
 
 import re
 import os
@@ -68,6 +71,7 @@ def book():
 
 
             text = [{'text': render_text(page.get_text())} for page in pdf]
+            text = text[:10]
             text = dict(zip(list(
                             range(len(text))), 
                             text))
@@ -108,3 +112,37 @@ def bookedit():
     _id = request.args.get('id', '')
     book = Book.query.filter(Book.id== _id).first().to_dict()
     return render_template('book/bookedit.html', book=book)
+
+
+
+
+
+
+
+@blueprint.route('/pdf', methods=['GET'])
+def page():
+    _id = request.args.get('id')
+    page = int(request.args.get('page'))
+    filepath = request.args.get('filepath')
+
+
+    page = PdfReader(filepath).pages[page]
+    page.scale_to(868,1216)
+    pdf = PdfWriter()
+    pdf.add_page(page)
+
+    outfile = io.BytesIO()
+    pdf.write(outfile)
+    pdf.close()
+    outfile.seek(0)
+
+    return send_file(outfile, mimetype='application/pdf')
+
+
+
+
+
+
+
+
+

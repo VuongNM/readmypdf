@@ -578,12 +578,28 @@ video {
   }
 }
 
+.fixed {
+  position: fixed;
+}
+
 .absolute {
   position: absolute;
 }
 
 .relative {
   position: relative;
+}
+
+.sticky {
+  position: sticky;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}
+
+.bottom-1 {
+  bottom: 0.25rem;
 }
 
 .float-left {
@@ -598,6 +614,10 @@ video {
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 
 .block {
@@ -704,6 +724,44 @@ video {
   height: 77rem;
 }
 
+.h-min {
+  height: -moz-min-content;
+  height: min-content;
+}
+
+.h-max {
+  height: -moz-max-content;
+  height: max-content;
+}
+
+.h-\[1216-px\] {
+  height: 1216-px;
+}
+
+.h-\[1216px\] {
+  height: 1216px;
+}
+
+.h-\[10-px\] {
+  height: 10-px;
+}
+
+.h-\[10px\] {
+  height: 10px;
+}
+
+.h-\[20px\] {
+  height: 20px;
+}
+
+.h-\[40px\] {
+  height: 40px;
+}
+
+.h-\[30px\] {
+  height: 30px;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -724,6 +782,14 @@ video {
   min-height: 55rem;
 }
 
+.min-h-0 {
+  min-height: 0px;
+}
+
+.min-h-\[1200px\] {
+  min-height: 1200px;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -738,6 +804,18 @@ video {
 
 .w-1 {
   width: 0.25rem;
+}
+
+.w-\[760px\] {
+  width: 760px;
+}
+
+.w-\[868px\] {
+  width: 868px;
+}
+
+.w-auto {
+  width: auto;
 }
 
 .flex-grow {
@@ -882,8 +960,26 @@ video {
   background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
+.bg-transparent {
+  background-color: transparent;
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-orange-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 115 22 / var(--tw-bg-opacity));
+}
+
 .p-\[10\%\] {
   padding: 10%;
+}
+
+.p-\[5\%\] {
+  padding: 5%;
 }
 
 .px-1 {
@@ -944,6 +1040,31 @@ video {
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.px-\[10\%\] {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.px-\[5\%\] {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.py-\[5\%\] {
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.py-\[7\%\] {
+  padding-top: 7%;
+  padding-bottom: 7%;
+}
+
+.py-\[10\%\] {
+  padding-top: 10%;
+  padding-bottom: 10%;
 }
 
 .pt-10 {

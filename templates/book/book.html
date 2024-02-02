@@ -5,36 +5,47 @@
 
 {% include "book/booktitle.html" %}
 
-    <div class="relative flex flex-grow border-3">
-        <div class="w-1/2 h-[75rem]">
-            <embed src="{{ book.path }}" height="242352px"  class="w-full h-[76rem] scrollframe"/> </embed> 
-        </div>
 
-        <div class="w-1/2 overflow-y-auto scroller">
-            <div class="w-full h-[76rem] items-center justify-center">
-                {% for page, page_content in book['content'].items() %}
-                    <div class="w-full min-h-[76rem] border-x-8 border-y-20 p-[10%]">
+
+<div class="px-[10%] py-10">
+    {% for page, page_content in book['content'].items() %}
+        <div class="flex w-full float-left border-8 ">
+
+            <div class="w-1/2 h-full float-left" >
+                <div class="h-screen">
+                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0"  class="w-full h-full" /> </embed>                     
+                </div>
+            </div>
+
+            <div class="w-1/2 h-screen float-left flex flex-col">
+                <div class="px-[10%] py-[10%] basis-9/10">
+                    <p class="h-full whitespace-pre-line text-justify align-middle  leading-8 justify-center "> 
+                        {{ page_content.text }} 
+                    </p>    
+                </div>
+
+
+                <footer class="px-[10%] py-[10%] bottom-0 mt-auto basis-1/10 sticky bg-amber-50">
+                    <div class="flex w-full float-left h-[40px]">
+                        
+
+                    <div class="flex w-1/2 h-full float left items-center justify-center">
                         {% include "book/player.html" %}
-
-                        <div class="place-content-center overflow-y-auto justify-center p-[10%] border-2 min-h-[55rem]">
-                                <p class="whitespace-pre-line text-justify align-middle px-20 leading-8 justify-center "> 
-                                {{ page_content.text }} 
-                                </p>
-                        </div>
-
-                        <div>
-                            <p class="text-slate-300 text-right">Page: {{ page }} </p>
-                        </div>
+                    </div>
+                    <div class="text-slate-300 text-right bottom-0 w-1/2 float-left">
+                        <p >Page: {{ page }} </p>
+                        
+                    </div>
 
                     </div>
 
-                {% endfor %}
-
-            </div>
+                </footer>
+            </div>        
         </div>
-    </div>
+
+    {% endfor %}
 
 
-
+</div>
 
 {% endblock main_content %}
