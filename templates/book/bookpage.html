@@ -3,12 +3,12 @@
         <div class="flex w-full float-left border-2 border-amber-50  px-[10%] border-b-[100px] ">
 
             <div class="w-1/2 h-full float-left " >
-                <div class="h-screen">
-                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0"  class="w-full h-full" /> </embed>                     
+                <div class="h-[calc(100vh+15px)]">
+                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0"  class="border-amber-50 w-full h-full" /> </embed>                     
                 </div>
             </div>
 
-            <div class="w-1/2 h-screen float-left flex flex-col">
+            <div class="w-1/2 h-[calc(100vh+15px)] float-left flex flex-col border-t-2 border-b-2 border-r-2 border-black">
                 <div class="basis-9/10 overflow-scroll">
                     <p class="px-[10%] py-[10%] whitespace-pre-line text-justify align-middle justify-center "> 
                         {{ page_content.text }} 
@@ -20,8 +20,8 @@
                     <div class="flex w-1/2 h-full float left items-center justify-center">
                         {% include "book/player.html" %}
                     </div>
-                    <div class="text-slate-300 text-right bottom-0 w-1/2 float-left">
-                        <p >Page: {{ page }} </p>
+                    <div class="text-right bottom-0 w-1/2 float-left">
+                        <p > {{ page }} </p>
                         
                     </div>
 
