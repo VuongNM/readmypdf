@@ -28,15 +28,34 @@ blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 def book():
     if request.method == 'GET':
         _id = request.args.get('id', '')
+        from_page = int(request.args.get('from', 0))
+        limit = int(request.args.get('limit', 10))
 
         book = Book.query.filter(Book.id== _id).first()
 
         if book is not None:
             book = book.to_dict()
 
-            book['content'] =  json.loads(book['content'])
+            content  =  json.loads(book['content'])
+            content = { int(k): v for k,v in content.items()  if int(k) >= from_page and int(k) < from_page + limit}
+            
+            if len(content):
+                next_chunk = from_page + limit
+            else:
+                next_chunk = None
 
-            return render_template('book/book.html', book=book, render_text=render_text)
+            if 'HX-Request' in request.headers:
+                return render_template('book/bookpage.html', 
+                                content=content,
+                                book=book,
+                                next_chunk = next_chunk,
+                                render_text=render_text)
+            else:
+                return render_template('book/book.html', 
+                                content=content,
+                                book=book,
+                                next_chunk=next_chunk,
+                                render_text=render_text)
         else:
             return render_template('404.html'), 404
 
@@ -71,7 +90,6 @@ def book():
 
 
             text = [{'text': render_text(page.get_text())} for page in pdf]
-            text = text[:10]
             text = dict(zip(list(
                             range(len(text))), 
                             text))

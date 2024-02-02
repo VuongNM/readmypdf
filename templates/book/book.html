@@ -5,47 +5,6 @@
 
 {% include "book/booktitle.html" %}
 
-
-
-<div class="px-[10%] py-10">
-    {% for page, page_content in book['content'].items() %}
-        <div class="flex w-full float-left border-8 ">
-
-            <div class="w-1/2 h-full float-left" >
-                <div class="h-screen">
-                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0"  class="w-full h-full" /> </embed>                     
-                </div>
-            </div>
-
-            <div class="w-1/2 h-screen float-left flex flex-col">
-                <div class="px-[10%] py-[10%] basis-9/10">
-                    <p class="h-full whitespace-pre-line text-justify align-middle  leading-8 justify-center "> 
-                        {{ page_content.text }} 
-                    </p>    
-                </div>
-
-
-                <footer class="px-[10%] py-[10%] bottom-0 mt-auto basis-1/10 sticky bg-amber-50">
-                    <div class="flex w-full float-left h-[40px]">
-                        
-
-                    <div class="flex w-1/2 h-full float left items-center justify-center">
-                        {% include "book/player.html" %}
-                    </div>
-                    <div class="text-slate-300 text-right bottom-0 w-1/2 float-left">
-                        <p >Page: {{ page }} </p>
-                        
-                    </div>
-
-                    </div>
-
-                </footer>
-            </div>        
-        </div>
-
-    {% endfor %}
-
-
-</div>
+{% include"book/bookpage.html" %}
 
 {% endblock main_content %}
