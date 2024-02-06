@@ -1,7 +1,7 @@
 
 
 import flask
-from flask import Flask, render_template, request, redirect, current_app as app
+from flask import Flask, render_template, request, redirect, current_app as app, send_file
 from app import db
 
 from data.database import Book
@@ -10,6 +10,9 @@ from datetime import datetime
 import fitz
 import json
 from pdf2image import convert_from_path
+import io
+from PyPDF2 import PdfReader
+from PyPDF2 import PdfWriter
 
 import re
 import os
@@ -25,15 +28,34 @@ blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 def book():
     if request.method == 'GET':
         _id = request.args.get('id', '')
+        from_page = int(request.args.get('from', 0))
+        limit = int(request.args.get('limit', 10))
 
         book = Book.query.filter(Book.id== _id).first()
 
         if book is not None:
             book = book.to_dict()
 
-            book['content'] =  json.loads(book['content'])
+            content  =  json.loads(book['content'])
+            content = { int(k): v for k,v in content.items()  if int(k) >= from_page and int(k) < from_page + limit}
+            
+            if len(content):
+                next_chunk = from_page + limit
+            else:
+                next_chunk = None
 
-            return render_template('book/book.html', book=book, render_text=render_text)
+            if 'HX-Request' in request.headers:
+                return render_template('book/bookpage.html', 
+                                content=content,
+                                book=book,
+                                next_chunk = next_chunk,
+                                render_text=render_text)
+            else:
+                return render_template('book/book.html', 
+                                content=content,
+                                book=book,
+                                next_chunk=next_chunk,
+                                render_text=render_text)
         else:
             return render_template('404.html'), 404
 
@@ -108,3 +130,37 @@ def bookedit():
     _id = request.args.get('id', '')
     book = Book.query.filter(Book.id== _id).first().to_dict()
     return render_template('book/bookedit.html', book=book)
+
+
+
+
+
+
+
+@blueprint.route('/pdf', methods=['GET'])
+def page():
+    _id = request.args.get('id')
+    page = int(request.args.get('page'))
+    filepath = request.args.get('filepath')
+
+
+    page = PdfReader(filepath).pages[page]
+    page.scale_to(868,1216)
+    pdf = PdfWriter()
+    pdf.add_page(page)
+
+    outfile = io.BytesIO()
+    pdf.write(outfile)
+    pdf.close()
+    outfile.seek(0)
+
+    return send_file(outfile, mimetype='application/pdf')
+
+
+
+
+
+
+
+
+

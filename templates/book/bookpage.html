@@ -1,8 +1,42 @@
+<div name="bookpage px-[10%] flex-col">
+    {% for page, page_content in content.items() %}
+        <div class="flex w-full float-left border-2 border-amber-50  px-[10%] border-b-[100px] ">
 
-<div class="place-content-center h-5/6 overflow-y-auto border-8 justify-center px-20 py-20">
-    <span class="align-middle justify-center">
-        <p class="whitespace-pre-line align-middle px-20 leading-8 text-lg justify-center"> 
-        {{ page_content.text }} 
-        </p>
-    </span>
+            <div class="w-1/2 h-full float-left " >
+                <div class="h-[calc(100vh+15px)]">
+                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0&pagemode=none"  class="border-amber-50 w-full h-full" /> </embed>                     
+                </div>
+            </div>
+
+            <div class="w-1/2 h-[calc(100vh+15px)] float-left flex flex-col border-t-2 border-b-2 border-r-2 border-black">
+                <div class="basis-9/10 px-[10%] py-[10%] border-0">
+                        {{ page_content.text }} 
+                    </p>    
+                </div>
+
+                    <footer class="px-[10%] py-[10%] bottom-0 mt-auto basis-1/10 ">
+                        <div class="flex w-full float-left h-[40px] ">
+                            <div class="flex w-1/2 h-full float left items-center justify-center">
+                                {% include "book/player.html" %}
+                            </div>
+                            <div class="text-right bottom-0 w-1/2 float-left">
+                                <p > {{ page }} </p>
+                                
+                            </div>
+
+                        </div>
+
+                    </footer>
+
+            </div>        
+        </div>
+
+    {% endfor %}
+    {% if next_chunk is not none %}    
+        <div hx-get="/book?id={{ book.id }}&from={{ next_chunk }}&limit=10" hx-trigger="intersect once" hx-swap="afterend">
+            <p class="text-center"> ~~</p>
+        </div>
+        
+    {% endif %}
+
 </div>

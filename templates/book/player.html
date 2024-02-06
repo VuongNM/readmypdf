@@ -1,4 +1,4 @@
-<div hx-target="this" hx-swap="outerHTML" class="flex mx-auto items-center justify-center h-20 bg-amber-200 width-screen">
+<div hx-target="this" hx-swap="outerHTML" >
     
 
     {% if audio is defined %}
@@ -10,10 +10,9 @@
 
         
             {% if message is defined %}
-                <button class="btn btn-primary" > Read this page </button >
-                 <span class="popuptext" id="myPopup">A Simple Popup!</span>
+                <button class="btn btn-primary" > {{ message }} </button >
             {% else %}
-                <button class="btn btn-primary" > Read this page </button >
+                <button class="btn btn-primary" > <img src="/static/images/speaker.png" width="20" height="20"> </button >
             {% endif %}
 
     </form>

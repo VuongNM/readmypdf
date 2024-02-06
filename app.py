@@ -6,8 +6,10 @@ import sys
 from flask_sqlalchemy import SQLAlchemy
 from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER, AUDIO_FOLDER
 from utils import *
-
+from speech2text.s2t import Reader
+from flask import g
 import flask
+from scipy.io.wavfile import write
 
 app = flask.Flask('app')
 
@@ -19,7 +21,7 @@ app.config['AUDIO_FOLDER'] = AUDIO_FOLDER
 
 db = SQLAlchemy(app)
 
-
+reader = Reader()
 
 
 def register_blueprint():
@@ -35,6 +37,7 @@ def configure():
     from data.database import Book
 
     with app.app_context():
+
         db.create_all()
 
         # _ = Book.create(name='zen and the art of motorcycle maintenance', path='data/storage/file1')
@@ -42,7 +45,6 @@ def configure():
         # _ = Book.create(name='road to serfdom', path='data/storage/file2')
         print ("here")
         db.session.commit()
-
 
     print ("register_blueprint...")
 
