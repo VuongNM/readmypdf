@@ -12,17 +12,13 @@ import json
 
 blueprint = flask.Blueprint('catalog', __name__, template_folder='templates')
 
-@blueprint.get('/')
-def index():
-    return "Hello world"
-
-
 @blueprint.get('/about')
 def about():
     return render_template('/about.html')
 
 
 @blueprint.get('/catalog')
+@blueprint.get('/')
 def catalog():
     books = [x.to_dict() for x in Book.query.all()]
 

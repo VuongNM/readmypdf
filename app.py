@@ -40,10 +40,6 @@ def configure():
 
         db.create_all()
 
-        # _ = Book.create(name='zen and the art of motorcycle maintenance', path='data/storage/file1')
-        # _ = Book.create(name='zen', path='data/storage/file1')
-        # _ = Book.create(name='road to serfdom', path='data/storage/file2')
-        print ("here")
         db.session.commit()
 
     print ("register_blueprint...")
