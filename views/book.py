@@ -17,11 +17,16 @@ from PyPDF2 import PdfWriter
 import re
 import os
 
-from utils import render_text, allowed_file
+from utils import parse_text, allowed_file
 
 blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 
 
+def render_text_as_html(text):
+    paragraphs = text.split('\n')
+    def _wrap(text):
+        return f"<p> {text} </p>"
+    return " <br> ".join([_wrap(p) for p in paragraphs])
 
 
 @blueprint.route('/book', methods=['GET', 'POST', 'DELETE', 'PUT'])
@@ -49,13 +54,15 @@ def book():
                                 content=content,
                                 book=book,
                                 next_chunk = next_chunk,
-                                render_text=render_text)
+                                render_text_as_html=render_text_as_html
+                                )
             else:
                 return render_template('book/book.html', 
                                 content=content,
                                 book=book,
                                 next_chunk=next_chunk,
-                                render_text=render_text)
+                                render_text_as_html=render_text_as_html
+                                )
         else:
             return render_template('404.html'), 404
 
@@ -89,7 +96,7 @@ def book():
                     name = file.filename
 
 
-            text = [{'text': render_text(page.get_text())} for page in pdf]
+            text = [{'text': parse_text(page.get_text())} for page in pdf]
             text = dict(zip(list(
                             range(len(text))), 
                             text))
