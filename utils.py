@@ -10,14 +10,14 @@ def get_book_link(book_id):
     return f'/book?id={bookid}'
 
 
-def render_text(text):
+def parse_text(text):
 
     lines = text.split('\n')
     # avg_len = sum([len(x) for x in lines]) / len(lines)
     avg_len = statistics.median([len(l) for l in lines])
     rendered = []
     for l in lines:
-        if len(l) < 0.8 * avg_len and l.endswith('.'):
+        if len(l) < 0.9 * avg_len and l.endswith('.'):
            l += '\n\n'
         rendered += l,
 
