@@ -43,7 +43,7 @@ def length_to_mask(lengths):
     return mask
 
 
-class Reader():
+class Reader(object):
     def __init__(self, *args, **kwargs):
         text_cleaner = TextCleaner()
         phonemizer = _phonemizer.backend.EspeakBackend(language='en-us', preserve_punctuation=True,  with_stress=True)
@@ -69,10 +69,6 @@ class Reader():
         params_whole = torch.load("speech2text/models/LJSpeech/epoch_2nd_00100.pth", map_location=DEVICE)
         params = params_whole['net']
 
-
-
-
-
         for key in model:
             if key in params:
                 print('%s loaded' % key)
@@ -85,12 +81,8 @@ class Reader():
                     for k, v in state_dict.items():
                         name = k[7:] # remove `module.`
                         new_state_dict[name] = v
-                    # load params
                     model[key].load_state_dict(new_state_dict, strict=False)
-        #             except:
-        #                 _load(params[key], model[key])
         _ = [model[key].eval() for key in model]
-
 
         sampler = DiffusionSampler(
             model.diffusion.diffusion,
@@ -114,7 +106,7 @@ class Reader():
         tokens = self.text_cleaner(ps)
         tokens.insert(0, 0)
         tokens = torch.LongTensor(tokens).to(DEVICE).unsqueeze(0)
-        
+
         model = self.model
         sampler = self.sampler
 
@@ -125,16 +117,16 @@ class Reader():
 
             t_en = model.text_encoder(tokens, input_lengths, text_mask)
             bert_dur = model.bert(tokens, attention_mask=(~text_mask).int())
-            d_en = model.bert_encoder(bert_dur).transpose(-1, -2) 
+            d_en = model.bert_encoder(bert_dur).transpose(-1, -2)
 
-            s_pred = sampler(noise, 
+            s_pred = sampler(noise,
                   embedding=bert_dur[0].unsqueeze(0), num_steps=diffusion_steps,
                   embedding_scale=embedding_scale).squeeze(0)
-            
+
             if s_prev is not None:
                 # convex combination of previous and current style
                 s_pred = alpha * s_prev + (1 - alpha) * s_pred
-            
+
             s = s_pred[:, 128:]
             ref = s_pred[:, :128]
 
@@ -154,16 +146,13 @@ class Reader():
             # encode prosody
             en = (d.transpose(-1, -2) @ pred_aln_trg.unsqueeze(0).to(DEVICE))
             F0_pred, N_pred = model.predictor.F0Ntrain(en, s)
-            out = model.decoder((t_en @ pred_aln_trg.unsqueeze(0).to(DEVICE)), 
+            out = model.decoder((t_en @ pred_aln_trg.unsqueeze(0).to(DEVICE)),
                                     F0_pred, N_pred, ref.squeeze().unsqueeze(0))
-            
+
         return out.squeeze().cpu().numpy(), s_pred
 
 
 
-
-
-        
     def read(self, passage):
         sentences = passage.split('.') # simple split by comma
         wavs = []
@@ -178,8 +167,42 @@ class Reader():
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("text", help="The text to be read", type=str)
+    parser.add_argument("split_sentence", help="Split text into sentences for better reading", type=bool)
+    parser.add_argument("speed", help="The reading speed.", type=float)
+    parser.add_argument("output", help="Output sound file location", type=str)
 
-    r = Reader()
-    sound = r.read('this is sparta!')
-    write('./sound.wav', SAMPLING_RATE, sound)
+    args = parser.parse_args()
+
+    text = args.text
+    split_sentence =  args.split_sentence
+    speed =  args.speed
+
+    reader = Reader()
+
+    if split_sentence:
+        sound = []
+        sentences = nltk.sent_tokenize(text)
+        for s in sentences:
+            if len(s):
+                sound += reader.read(s)
+        sound = np.concatenate(sound)
+    else:
+        sound = reader.read(text)
+
+
+    # r = Reader()
+    # sound = r.read('this is sparta!')
+    write(output, SAMPLING_RATE, sound)
+
+
+
+
+
+
+
+
+
 
