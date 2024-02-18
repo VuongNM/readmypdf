@@ -5,11 +5,10 @@ import sys
 
 from flask_sqlalchemy import SQLAlchemy
 from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER, AUDIO_FOLDER
-from utils import *
+from utils import clean_dir
 from speech2text.s2t import Reader
 from flask import g
 import flask
-from scipy.io.wavfile import write
 
 app = flask.Flask('app')
 
@@ -32,18 +31,17 @@ def register_blueprint():
 
 
 def configure():
-
+    print("Clean up previous runs")
+    clean_dir("./static/images/")
+    clean_dir("./static/book/")
+    print("Setting up dababase")
     # setting up the database
     from data.database import Book
 
     with app.app_context():
-
         db.create_all()
-
         db.session.commit()
-
-    print ("register_blueprint...")
-
+    print("register_blueprint...")
     register_blueprint()
 
 
