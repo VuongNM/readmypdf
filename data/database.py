@@ -31,12 +31,12 @@ class Book(BaseModel):
 class BookContent(BaseModel):
     # grain: book, page_num, sentence_num
     __tablename__ = 'book_content'
-    id: Mapped[int] = mapped_column(primary_key=True,)
+    id: Mapped[int] = mapped_column(primary_key=True)
     book_id: Mapped[int]
     page_num: Mapped[int]
     sentence_num: Mapped[int]
-    text: Mapped[str]
-    audio: Mapped[str]
+    text: Mapped[str] = mapped_column(nullable=True)
+    audio: Mapped[str] = mapped_column(nullable=True)
 
 
 
