@@ -32,7 +32,7 @@ def register_blueprint():
 
 def configure():
     print("Clean up previous runs")
-    clean_dir("./static/images/")
+    clean_dir("./static/images/upload")
     clean_dir("./static/book/")
     print("Setting up dababase")
     # setting up the database

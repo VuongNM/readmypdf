@@ -1,6 +1,7 @@
 import fitz
 import statistics
-
+import os
+import glob
 from config import ALLOWED_EXTENSIONS
 def clear_files():
     # todo: clear uploaded files
@@ -32,6 +33,11 @@ def parse_text(text):
 
 ALLOWED_EXTENSIONS = {'pdf', 'PDF'}
 
+def clean_dir(directory):
+    files = glob.glob(directory+"/*")
+    for f in files:
+        print(f)
+        os.remove(f)
 
 
 def allowed_file(filename):
