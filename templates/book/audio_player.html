@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/static/css/main.css" type="text/css" />
+    
+
+<div id="player" class="flex flex-row w-full space-x-2 items-center justify-center fixed bottom-0 bg-amber-200 m-auto">
+    <audio id="audio" preload></audio>
+    <div id="action"></div>      
+
+    <div id="playpause">
+        <div id="play"> <button  class=" rounded-full hover:bg-amber-400 px-5"> Play</button></div>
+        <div> <button id="pause" class="rounded-full hover:bg-amber-400 px-5 hidden" > Pause</button></div>
+    </div>
+    <div> <button id="repeat" class="rounded-full hover:bg-amber-300 px-5"> Repeat</button></div>
+
+    <div> <button id="prev" class="rounded-full hover:bg-amber-400 px-5"> < Prev </button></div>
+    <div> <button id="next" class="rounded-full hover:bg-amber-400 px-5"> Next > </button></div>
+    <div class="flex flex-row">
+
+    <label class=" flex flex-row">
+      <input type="checkbox" id="autoplay" value="true" checked="checked" class="sr-only peer">
+      <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+      <span class="ms-3 text-sm text-gray-900 dark:text-gray-300">Autoplay</span>
+    </label>
+
+    </div>
+
+    <div id="playlist-wrap">
+    </div>
+    <script src="static/js/audioplayer.js"></script>
+
+</div>
+
+</body>

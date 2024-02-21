@@ -22,10 +22,15 @@ from utils import parse_text, allowed_file
 blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 
 
-def render_text_as_html(text):
+def render_text_as_html(sentences):
+    # sentences is a list of strings
+    text = ' '.join(sentences)
     paragraphs = text.split('\n')
-    def _wrap(text):
-        return f"<p> {text} </p>"
+
+    # return text
+    def _wrap(para):
+        return f"<p> {para} </p>"
+
     return " <br> ".join([_wrap(p) for p in paragraphs])
 
 
@@ -41,25 +46,44 @@ def book():
         if book is not None:
             book = book.to_dict()
 
-            content  =  json.loads(book['content'])
-            content = { int(k): v for k,v in content.items()  if int(k) >= from_page and int(k) < from_page + limit}
+            book_content = BookContent.query.filter(BookContent.book_id==_id, 
+                                        BookContent.page_num >= from_page,
+                                        BookContent.page_num < from_page+limit
+                                        ).order_by(BookContent.page_num, BookContent.sentence_num).all()
 
-            if len(content):
-                next_chunk = from_page + limit
-            else:
-                next_chunk = None
+            
+            pages = [
+                ["sentence11", "sentence12"],
+                ["sentence21", "sentence22"],
+
+            ]
+            pages = {}
+            book_content = [sent.to_dict() for sent in book_content]
+            for sent in book_content:
+                if sent['page_num'] not in pages:
+                    pages[sent['page_num']] = [ sent['text'] ]
+                else:
+                    pages[sent['page_num']] += sent['text'],
+
+            pages = dict(sorted(pages.items())) #python 3.7+
+
+
+            next_chunk = from_page + limit if len(pages) else None
 
             if 'HX-Request' in request.headers:
                 return render_template('book/bookpage.html',
-                                content=content,
+                                book_id=_id,
+                                pages=pages,
                                 book=book,
                                 next_chunk = next_chunk,
                                 render_text_as_html=render_text_as_html
                                 )
             else:
                 return render_template('book/book.html',
-                                content=content,
+                                book_id=_id,
+                                pages=pages,
                                 book=book,
+                                sentences=book_content,
                                 next_chunk=next_chunk,
                                 render_text_as_html=render_text_as_html
                                 )
@@ -104,8 +128,8 @@ def book():
                             text))
 
             # text = {
-            #     '1': {'text': "asdfadsf"},
-            #     '2': {'text': "asdfadsf"},
+            #     page '1': {'text': "asdfadsf"},
+            #     page '2': {'text': "asdfadsf"},
             #     ...
             # }
 
@@ -121,15 +145,23 @@ def book():
 
             book_content = []
             for page_num, page_content in text.items():
-                sentences = nltk.sent_tokenize(page_content['text'])
+                paragraphs = page_content['text'].split('\n\n')
+                
+                sentences = []
+                for p in paragraphs:
+                    sentences += nltk.sent_tokenize(p)
+                    sentences += '\n\n',
+
                 for sentence_num, sentence in enumerate(sentences):
-                    # todo: bulk insert this, not create one by one
                     book_content += BookContent(
                         book_id=book.id,
                         page_num=page_num,
                         sentence_num=sentence_num,
                         text=sentence if len(sentence) else None,
                         audio=None),
+                
+
+
             db.session.bulk_save_objects(book_content)
             db.session.commit()
 
@@ -192,6 +224,6 @@ def page():
 
 @blueprint.route('/player2', methods=['GET'])
 def player():
-    return render_template('book/player2.html')
+    return render_template('book/audio_player.html')
 
 
