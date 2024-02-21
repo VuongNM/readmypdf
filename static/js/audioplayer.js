@@ -1,9 +1,9 @@
 
-function read(book_id, page) {
+function read(book_id, page, idx=0) {
 	console.log(page)
 	// HTML5 audio player + playlist controls
 	var jsPlayer = document.getElementById('player');
-	// console.log(jsPlayer.querySelector('#playlist-wrap'))
+
 	// console.log(jsPlayer.querySelector('#audio'))
 	playlistPerPage = 'playlist-'+page
 
@@ -29,11 +29,11 @@ function read(book_id, page) {
 			from_book: book_id,
 			from_page: page,
 			trackCount: 0,
-	    seeking: null,
+	    	seeking: null,
 			playing: false,
 			tracks: [],
 			track: [],
-			idx: 0
+			idx: idx
 		};
 
 		jsPlayer.playClicked = function jsPlayerPlayClicked(){
@@ -42,9 +42,11 @@ function read(book_id, page) {
 			jsPlayer.pause.style.display = 'block';
 			jsPlayer.play.style.display = 'none';
 			jsPlayer.playing = true;
-			jsPlayer.action.innerHTML = 'Page: ' + page;
+			jsPlayer.action.innerHTML = 'Page: ' + jsPlayer.from_page;
+			jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
 			jsPlayer.player.play();
 			// jsPlayer.updateSeek();
+
 		};
 		jsPlayer.pauseClicked = function jsPlayerPauseClicked(){
 			console.log("Click pause")
@@ -52,7 +54,7 @@ function read(book_id, page) {
 			jsPlayer.pause.style.display = 'none';
 			clearTimeout(jsPlayer.seeking);
 			jsPlayer.playing = false;
-			jsPlayer.action.innerHTML = 'Page: ' + page;
+			jsPlayer.action.innerHTML = 'Page: ' + jsPlayer.from_page;
 			jsPlayer.player.pause();
 		};
 		jsPlayer.loadPlaylist = function jaPlayerLoadPlaylist(){
@@ -93,6 +95,8 @@ function read(book_id, page) {
 			jsPlayer.player.src = jsPlayer.tracks[idx].file;
 		};
 		jsPlayer.playTrack = function jsPlayerPlayTrack(idx){
+			console.log("playTrack")
+
 			if (idx == 1){
 				book_id = jsPlayer.from_book
 				page_num = jsPlayer.from_page
@@ -165,6 +169,7 @@ function read(book_id, page) {
 								if (jsPlayer.playing) {
 									jsPlayer.action.innerHTML = 'Now Playing&hellip;';
 									jsPlayer.player.play();
+									jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
 								}
 							} else {
 								jsPlayer.action.innerHTML = 'Paused&hellip;';
@@ -184,6 +189,8 @@ function read(book_id, page) {
 								if (jsPlayer.playing) {
 									jsPlayer.action.innerHTML = 'Now Playing&hellip;';
 									jsPlayer.player.play();
+									jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
+
 								}
 							} else {
 								jsPlayer.action.innerHTML = 'Paused&hellip;';
@@ -231,6 +238,29 @@ function read(book_id, page) {
 						// jsPlayer.current.innerHTML = jsPlayer.formatTime(jsPlayer.player.currentTime);
 						// jsPlayer.seek.value = jsPlayer.player.currentTime / jsPlayer.player.duration;
 					};
+					jsPlayer.highlightText = function Text(page_num, idx) {
+						console.log("reach highlightText ");
+						console.log("page_num "+page_num);
+
+						page = document.getElementById("page-text-"+page_num)
+						console.log(page);
+
+						sentences = page.getElementsByClassName("book-sentence");
+						// sentences = document.getElementsByClassName("book-sentence");
+						console.log(sentences);
+
+						for (var i = sentences.length - 1; i >= 0; i--) {
+							if (i == idx){
+								sentences[i].setAttribute("style", "background-color: rgb(252 211 77);")  //bg-amber-300
+
+							}
+							else {
+								sentences[i].setAttribute("style", "")
+
+							}
+						}
+						console.log(sentences);
+					}
 					jsPlayer.updateSeek = function updateSeek() {
 						// jsPlayer.seek.value = 100 * jsPlayer.player.currentTime / jsPlayer.player.duration;
 						// jsPlayer.current.innerHTML = jsPlayer.formatTime(jsPlayer.player.currentTime);

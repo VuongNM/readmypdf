@@ -24,14 +24,16 @@ blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 
 def render_text_as_html(sentences):
     # sentences is a list of strings
+        # return text
+    def _wrap(text, id=None):
+        return f"<span class=\"book-sentence hover:bg-amber-200\" id=\"{id}\" style=\"display:inline\" > {text} </span>"
+
+    sentences = [_wrap(s, id=idx) for idx, s in enumerate(sentences)]
     text = ' '.join(sentences)
     paragraphs = text.split('\n')
 
-    # return text
-    def _wrap(para):
-        return f"<p> {para} </p>"
 
-    return " <br> ".join([_wrap(p) for p in paragraphs])
+    return " <br> ".join([p for p in paragraphs])
 
 
 @blueprint.route('/book', methods=['GET', 'POST', 'DELETE', 'PUT'])
