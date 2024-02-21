@@ -18,17 +18,19 @@ import re
 import os
 
 from utils import parse_text, allowed_file
+from functools import partial
 
 blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 
 
-def render_text_as_html(sentences):
+def render_text_as_html(sentences, book_id=None, page_num=None):
     # sentences is a list of strings
         # return text
-    def _wrap(text, id=None):
-        return f"<span class=\"book-sentence hover:bg-amber-200\" id=\"{id}\" style=\"display:inline\" > {text} </span>"
+    def _wrap(text, _id=None):
+        # use the function read in audioplayer.js
+        return f"<span class=\"book-sentence hover:bg-amber-200\" id=\"{_id}\" style=\"display:inline\" onclick=\"read({book_id},{page_num},{_id})\"> {text} </span>"
 
-    sentences = [_wrap(s, id=idx) for idx, s in enumerate(sentences)]
+    sentences = [_wrap(s, _id=idx) for idx, s in enumerate(sentences)]
     text = ' '.join(sentences)
     paragraphs = text.split('\n')
 
@@ -54,11 +56,7 @@ def book():
                                         ).order_by(BookContent.page_num, BookContent.sentence_num).all()
 
             
-            pages = [
-                ["sentence11", "sentence12"],
-                ["sentence21", "sentence22"],
 
-            ]
             pages = {}
             book_content = [sent.to_dict() for sent in book_content]
             for sent in book_content:
