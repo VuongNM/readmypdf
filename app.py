@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER, AUDIO_FOLDER
 from utils import clean_dir
 from speech2text.s2t import Reader
-from flask import g
+from flask import g, url_for
 import flask
 
 app = flask.Flask('app')
@@ -32,7 +32,7 @@ def register_blueprint():
 
 def configure():
     print("Clean up previous runs")
-    clean_dir("./static/images/")
+    clean_dir("./static/images/upload")
     clean_dir("./static/book/")
     print("Setting up dababase")
     # setting up the database

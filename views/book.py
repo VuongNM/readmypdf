@@ -4,7 +4,7 @@ import flask
 from flask import Flask, render_template, request, redirect, current_app as app, send_file
 from app import db
 
-from data.database import Book
+from data.database import Book, BookContent
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import fitz
@@ -13,20 +13,29 @@ from pdf2image import convert_from_path
 import io
 from PyPDF2 import PdfReader
 from PyPDF2 import PdfWriter
-
+import nltk
 import re
 import os
 
 from utils import parse_text, allowed_file
+from functools import partial
 
 blueprint = flask.Blueprint('book', __name__, template_folder='templates')
 
 
-def render_text_as_html(text):
+def render_text_as_html(sentences, book_id=None, page_num=None):
+    # sentences is a list of strings
+        # return text
+    def _wrap(text, _id=None):
+        # use the function read in audioplayer.js
+        return f"<span class=\"book-sentence hover:bg-amber-200\" id=\"{_id}\" style=\"display:inline\" onclick=\"read({book_id},{page_num},{_id})\"> {text} </span>"
+
+    sentences = [_wrap(s, _id=idx) for idx, s in enumerate(sentences)]
+    text = ' '.join(sentences)
     paragraphs = text.split('\n')
-    def _wrap(text):
-        return f"<p> {text} </p>"
-    return " <br> ".join([_wrap(p) for p in paragraphs])
+
+
+    return " <br> ".join([p for p in paragraphs])
 
 
 @blueprint.route('/book', methods=['GET', 'POST', 'DELETE', 'PUT'])
@@ -41,25 +50,40 @@ def book():
         if book is not None:
             book = book.to_dict()
 
-            content  =  json.loads(book['content'])
-            content = { int(k): v for k,v in content.items()  if int(k) >= from_page and int(k) < from_page + limit}
+            book_content = BookContent.query.filter(BookContent.book_id==_id, 
+                                        BookContent.page_num >= from_page,
+                                        BookContent.page_num < from_page+limit
+                                        ).order_by(BookContent.page_num, BookContent.sentence_num).all()
+
             
-            if len(content):
-                next_chunk = from_page + limit
-            else:
-                next_chunk = None
+
+            pages = {}
+            book_content = [sent.to_dict() for sent in book_content]
+            for sent in book_content:
+                if sent['page_num'] not in pages:
+                    pages[sent['page_num']] = [ sent['text'] ]
+                else:
+                    pages[sent['page_num']] += sent['text'],
+
+            pages = dict(sorted(pages.items())) #python 3.7+
+
+
+            next_chunk = from_page + limit if len(pages) else None
 
             if 'HX-Request' in request.headers:
-                return render_template('book/bookpage.html', 
-                                content=content,
+                return render_template('book/bookpage.html',
+                                book_id=_id,
+                                pages=pages,
                                 book=book,
                                 next_chunk = next_chunk,
                                 render_text_as_html=render_text_as_html
                                 )
             else:
-                return render_template('book/book.html', 
-                                content=content,
+                return render_template('book/book.html',
+                                book_id=_id,
+                                pages=pages,
                                 book=book,
+                                sentences=book_content,
                                 next_chunk=next_chunk,
                                 render_text_as_html=render_text_as_html
                                 )
@@ -75,20 +99,21 @@ def book():
             filepath  = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            #extract a thumbnail 
+            #extract a thumbnail
             thumbnail = convert_from_path(filepath, first_page=0, last_page=1, size=(200,))[0]
-            thumbnail_path =  os.path.join(app.config['IMAGE_FOLDER'], filename+'.jpg')
+            thumbnail_path =  os.path.join(app.config['IMAGE_FOLDER'], 'upload', filename+'.jpg')
 
             thumbnail.save(thumbnail_path, "JPEG")
 
 
 
             # parse the pdf into text
+            # pdf is now a list of PDF page
             pdf =  fitz.open(filepath)
 
             author = pdf.metadata.get('author', '')
             title = pdf.metadata.get('title', '')
-            
+
             if len(name) == 0:
                 if len(title) > 0:
                     name = title
@@ -97,35 +122,65 @@ def book():
 
 
             text = [{'text': parse_text(page.get_text())} for page in pdf]
-            text = dict(zip(list(
-                            range(len(text))), 
-                            text))
-            text = json.dumps(text)
 
-            Book.create(name=name, 
-                        path=filepath, 
-                        author = author,
-                        title = title,
-                        content = text, 
+            text = dict(zip(list(
+                            range(len(text))),
+                            text))
+
+            # text = {
+            #     page '1': {'text': "asdfadsf"},
+            #     page '2': {'text': "asdfadsf"},
+            #     ...
+            # }
+
+            text_json = json.dumps(text)
+
+            book = Book.create(name=name,
+                        path=filepath,
+                        author=author,
+                        title=title,
+                        content=text_json,
                         thumbnail=thumbnail_path,
                         timestamp=datetime.now())
-        
+
+            book_content = []
+            for page_num, page_content in text.items():
+                paragraphs = page_content['text'].split('\n\n')
+                
+                sentences = []
+                for p in paragraphs:
+                    sentences += nltk.sent_tokenize(p)
+                    sentences += '\n\n',
+
+                for sentence_num, sentence in enumerate(sentences):
+                    book_content += BookContent(
+                        book_id=book.id,
+                        page_num=page_num,
+                        sentence_num=sentence_num,
+                        text=sentence if len(sentence) else None,
+                        audio=None),
+                
+
+
+            db.session.bulk_save_objects(book_content)
+            db.session.commit()
+
             return redirect('/catalog', 303)
 
     elif request.method == 'PUT':
         _id = request.args.get('id', '')
         book = Book.query.filter(Book.id == _id).first()
-        
+
         _book = book.to_dict()
         print(_book)
         print (request.form.get('name'))
         print (request.args.get('id'))
 
-        book.update(name=request.form.get('name'), 
-                    path=_book['path'], 
+        book.update(name=request.form.get('name'),
+                    path=_book['path'],
                     author = _book['author'],
                     title = _book['title'],
-                    content = _book['content'], 
+                    content = _book['content'],
                     thumbnail=_book['thumbnail'],
                     timestamp=datetime.now())
 
@@ -167,7 +222,8 @@ def page():
 
 
 
-
-
+@blueprint.route('/player2', methods=['GET'])
+def player():
+    return render_template('book/audio_player.html')
 
 

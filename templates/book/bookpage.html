@@ -1,25 +1,32 @@
 <div name="bookpage px-[10%] flex-col">
-    {% for page, page_content in content.items() %}
-        <div class="flex w-full float-left border-2 border-amber-50  px-[10%] border-b-[100px] ">
+    {% for page_num, page_content in pages.items() %}
+        <div id= "page-{{ page_num }}" class="flex w-full float-left border-2 border-amber-50  px-[10%] border-b-[100px] ">
 
             <div class="w-1/2 h-full float-left " >
                 <div class="h-[calc(100vh+15px)]">
-                    <embed src="/pdf?filepath={{ book.path }}&page={{ page }}#toolbar=0&navpanes=0&pagemode=none"  class="border-amber-50 w-full h-full" /> </embed>                     
+                    <embed src="/pdf?filepath={{ book.path }}&page={{ page_num }}#toolbar=0&navpanes=0&pagemode=none"  class="border-amber-50 w-full h-full" /> </embed>                     
                 </div>
             </div>
 
             <div class="w-1/2 h-[calc(100vh+15px)] float-left flex flex-col border-t-2 border-b-2 border-r-2 border-black">
-                <div class="basis-9/10 px-[10%] py-[10%] border-0 no-scrollbar overflow-y-auto">
-                        {{ render_text_as_html( page_content.text ) | safe }} 
+                <div id="page-text-{{ page_num }}" class="basis-9/10 px-[10%] py-[10%] border-0 no-scrollbar overflow-y-auto text-ellipsis">
+                        {{ render_text_as_html( page_content, book_id, page_num ) | safe }} 
                 </div>
 
                 <footer class="px-[10%] py-[10%] bottom-0 mt-auto basis-1/10 ">
                     <div class="flex w-full float-left h-[40px] ">
-                        <div class="flex w-1/2 h-full float left items-center justify-center">
-                            {% include "book/player.html" %}
+                        <div class="text-center bottom-0 w-1/2 float-left">
+                            <ol hidden="hidden" id="playlist-{{ page_num }}">
+                                {% for sent in page_content %}
+                                    <li hidden="hidden"><a href="audio?book_id={{ book_id }}&page_num={{ page_num }}&sentence_num={{ loop.index - 1 }}"> {{ sent }} </a></li>
+                                {% endfor %}
+                            </ol>
+                            <button onclick="read({{ book_id }}, {{ page_num }}, 0)">
+                                <img width="20" height="20" src="/static/images/speaker.png">
+                            </button>
                         </div>
                         <div class="text-right bottom-0 w-1/2 float-left">
-                            <p > {{ page }} </p>
+                            <p > {{ page_num  }} </p>
                             
                         </div>
 
