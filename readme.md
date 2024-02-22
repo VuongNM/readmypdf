@@ -22,7 +22,6 @@ Reading page with infinite scroll, click on the speaker button to read it out lo
 <img width="2486" alt="Screen Shot 2024-02-13 at 15 46 36" src="https://github.com/VuongNM/readmybook/assets/5158823/d9e0181d-61af-4273-a532-1f5348395f88">
 
 
-## Demo video
+## Demo video https://www.youtube.com/watch?v=t47Qmd5ZecY
 
-[![Everything Is AWESOME]([https://www.youtube.com/watch?v=t47Qmd5ZecY](https://github.com/VuongNM/readmypdf/assets/5158823/923938a1-eb81-4aea-b94c-6820c077689c))](https://www.youtube.com/watch?v=t47Qmd5ZecY)
 
