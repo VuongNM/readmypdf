@@ -1,14 +1,13 @@
 
-function read(book_id, page, idx=0) {
-	console.log(page)
+function read(book_id, page, sentence_idx=0) {
+	console.log("book_id: "+book_id+" page: "+ page + " idx: "+sentence_idx)
 	// HTML5 audio player + playlist controls
 	var jsPlayer = document.getElementById('player');
 
-	// console.log(jsPlayer.querySelector('#audio'))
 	playlistPerPage = 'playlist-'+page
 
 	if (jsPlayer) {
-		// console.log(jsPlayer);
+		// console.log("player"+jsPlayer);
 
 		jsPlayer = {
 			wrap: jsPlayer,
@@ -28,28 +27,38 @@ function read(book_id, page, idx=0) {
 			// from_page: (jsPlayer.querySelector('#from_page') || {}),
 			from_book: book_id,
 			from_page: page,
+			autoplay: jsPlayer.querySelector("#autoplay").checked,
 			trackCount: 0,
 	    	seeking: null,
 			playing: false,
 			tracks: [],
 			track: [],
-			idx: idx
+			idx: sentence_idx
 		};
 
 		jsPlayer.playClicked = function jsPlayerPlayClicked(){
-			// console.log(jsPlayer.tracks)
+			// console.log("jsPlayerPlayClicked "+jsPlayer.idx)
+			// console.log("play "+jsPlayer.play)
+			// console.log(jsPlayer.wrapList)
+			// jsPlayer.loadPlaylist();
+
+			// console.log(jsPlayer.track)
+
 			// jsPlayer.button.style.visibility = 'hidden';
 			jsPlayer.pause.style.display = 'block';
 			jsPlayer.play.style.display = 'none';
 			jsPlayer.playing = true;
 			jsPlayer.action.innerHTML = 'Page: ' + jsPlayer.from_page;
 			jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
+
+			// jsPlayer.loadTrack(jsPlayer.idx);
+
 			jsPlayer.player.play();
 			// jsPlayer.updateSeek();
 
 		};
 		jsPlayer.pauseClicked = function jsPlayerPauseClicked(){
-			console.log("Click pause")
+			// console.log("Click pause")
 			jsPlayer.play.style.display = 'block';
 			jsPlayer.pause.style.display = 'none';
 			clearTimeout(jsPlayer.seeking);
@@ -57,26 +66,27 @@ function read(book_id, page, idx=0) {
 			jsPlayer.action.innerHTML = 'Page: ' + jsPlayer.from_page;
 			jsPlayer.player.pause();
 		};
-		jsPlayer.loadPlaylist = function jaPlayerLoadPlaylist(){
+		jsPlayer.loadPlaylist = function jsPlayerLoadPlaylist(){
+			console.log("jsPlayerLoadPlaylist -> wrapList " + jsPlayer.wrapList)
 			jsPlayer.playlist = jsPlayer.wrapList? jsPlayer.wrapList.querySelectorAll('li') : [];
-			// console.log(jsPlayer.playlist)
+			console.log("jsPlayerLoadPlaylist -> li elems" + jsPlayer.wrapList.querySelectorAll('li'))
+
+			console.log(jsPlayer.playlist)
 
 			var len = jsPlayer.playlist.length,
 				tmp, i;
 			for (i = 0; i < len; i++) {
-				if (!jsPlayer.playlist[i].dataset) {
-					jsPlayer.playlist[i].dataset = {};
-				}
+				jsPlayer.playlist[i].dataset = {};
 				tmp = jsPlayer.playlist[i].querySelector('a');
-				if (tmp && !jsPlayer.playlist[i].dataset.idx) {
-					jsPlayer.playlist[i].dataset.idx = i + 1;
-					jsPlayer.trackCount++;
-					jsPlayer.tracks.push({
-						"file": tmp.href,
-						"name": (tmp.textContent || tmp.innerText).replace(/^\\s+|\\s+$/g, ''),
-						"track": i + 1
-					});
-				}
+
+
+				jsPlayer.playlist[i].dataset.idx = i + 1;
+				jsPlayer.trackCount++;
+				jsPlayer.tracks.push({
+					"file": tmp.href,
+					"name": (tmp.textContent || tmp.innerText).replace(/^\\s+|\\s+$/g, ''),
+					"track": i + 1
+				});
 			}
 		};
 		jsPlayer.loadTrack = function jsPlayerLoadTrack(idx){
@@ -93,9 +103,11 @@ function read(book_id, page, idx=0) {
 			}
 			// jsPlayer.title.innerHTML = jsPlayer.tracks[idx].name;
 			jsPlayer.player.src = jsPlayer.tracks[idx].file;
+
 		};
 		jsPlayer.playTrack = function jsPlayerPlayTrack(idx){
-			console.log("playTrack")
+			// console.log("playTrack: "+ idx)
+			// console.log("tracks: "+ jsPlayer.tracks + " length " + jsPlayer.tracks.length)
 
 			if (idx == 1){
 				book_id = jsPlayer.from_book
@@ -107,6 +119,29 @@ function read(book_id, page, idx=0) {
 			jsPlayer.playClicked();
 
 		};
+		jsPlayer.highlightText = function Text(page_num, idx) {
+			// console.log("reach highlightText ");
+			// console.log("page_num "+page_num);
+
+			page = document.getElementById("page-text-"+page_num)
+			// console.log(page);
+
+			sentences = page.getElementsByClassName("book-sentence");
+			// sentences = document.getElementsByClassName("book-sentence");
+			// console.log(sentences);
+
+			for (var i = sentences.length - 1; i >= 0; i--) {
+				if (i == idx){
+					sentences[i].setAttribute("style", "background-color: rgb(252 211 77);")  //bg-amber-300
+
+				}
+				else {
+					sentences[i].setAttribute("style", "")
+
+				}
+			}
+			// console.log(sentences);
+		}
 		jsPlayer.preload = async function jsPlayerPreload(book_id, page_num){
 			preload_url = "/read_page?book_id="+book_id+"&page_num="+page_num
 			console.log(preload_url)
@@ -139,14 +174,28 @@ function read(book_id, page, idx=0) {
 								jsPlayer.action.innerHTML = 'Page end.';
 								//todo: preload and play next page
 								jsPlayer.player.pause();
-								jsPlayer.idx = 0;
-								jsPlayer.loadTrack(jsPlayer.idx);
+
+								next_page = document.getElementById("page-"+(jsPlayer.from_page +1))
+
+								if (next_page && jsPlayer.autoplay){
+									console.log("Reading the next page");
+
+									read(jsPlayer.from_book, jsPlayer.from_page+1,0)
+								}
+								else{
+									console.log("End of stream");
+									jsPlayer.idx = 0;
+									jsPlayer.loadTrack(jsPlayer.idx);
+
+								}
 							}
 						}, true);
 						jsPlayer.player.addEventListener('loadeddata', function playerLoadeddata(){
 							// jsPlayer.setDuration();
 						}, true);
-					}
+					};
+
+
 					if (jsPlayer.play) {
 						jsPlayer.play.addEventListener('click', jsPlayer.playClicked, true);
 					}
@@ -157,6 +206,8 @@ function read(book_id, page, idx=0) {
 						jsPlayer.repeat.addEventListener('click', function buttonClicked(event){
 							event.preventDefault();
 							jsPlayer.loadTrack(jsPlayer.idx);
+							jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
+
 							jsPlayer.playClicked();
 						}, true);
 					}
@@ -166,10 +217,12 @@ function read(book_id, page, idx=0) {
 							if (jsPlayer.idx - 1 > -1) {
 								jsPlayer.idx--;
 								jsPlayer.loadTrack(jsPlayer.idx);
+								jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
+
 								if (jsPlayer.playing) {
 									jsPlayer.action.innerHTML = 'Now Playing&hellip;';
+
 									jsPlayer.player.play();
-									jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
 								}
 							} else {
 								jsPlayer.action.innerHTML = 'Paused&hellip;';
@@ -186,10 +239,10 @@ function read(book_id, page, idx=0) {
 							if (jsPlayer.idx + 1 < jsPlayer.trackCount) {
 								jsPlayer.idx++;
 								jsPlayer.loadTrack(jsPlayer.idx);
+								jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
 								if (jsPlayer.playing) {
 									jsPlayer.action.innerHTML = 'Now Playing&hellip;';
 									jsPlayer.player.play();
-									jsPlayer.highlightText(jsPlayer.from_page, jsPlayer.idx)
 
 								}
 							} else {
@@ -199,21 +252,6 @@ function read(book_id, page, idx=0) {
 								jsPlayer.idx = 0;
 								jsPlayer.loadTrack(jsPlayer.idx);
 							}
-						}, true);
-					}
-					if (jsPlayer.seek) {
-						jsPlayer.seek.addEventListener('mousedown', function seekClicked(){
-							// clearTimeout(jsPlayer.seeking);
-							// jsPlayer.action.innerHTML = 'Paused&hellip;';
-							// jsPlayer.player.pause();
-						}, true);
-						jsPlayer.seek.addEventListener('mouseup', function seekReleased(){
-							// jsPlayer.player.currentTime = jsPlayer.seek.value * jsPlayer.player.duration / 100;
-							// jsPlayer.updateSeek();
-							// if (jsPlayer.playing) {
-							// 	jsPlayer.action.innerHTML = 'Now Playing&hellip;';
-							// 	jsPlayer.player.play();
-							// }
 						}, true);
 					}
 					if (jsPlayer.wrapList) {
@@ -233,58 +271,7 @@ function read(book_id, page, idx=0) {
 							}
 						}, true);
 					}
-					jsPlayer.setDuration = function setDuration() {
-						// jsPlayer.duration.innerHTML = jsPlayer.formatTime(jsPlayer.player.duration);
-						// jsPlayer.current.innerHTML = jsPlayer.formatTime(jsPlayer.player.currentTime);
-						// jsPlayer.seek.value = jsPlayer.player.currentTime / jsPlayer.player.duration;
-					};
-					jsPlayer.highlightText = function Text(page_num, idx) {
-						console.log("reach highlightText ");
-						console.log("page_num "+page_num);
 
-						page = document.getElementById("page-text-"+page_num)
-						console.log(page);
-
-						sentences = page.getElementsByClassName("book-sentence");
-						// sentences = document.getElementsByClassName("book-sentence");
-						console.log(sentences);
-
-						for (var i = sentences.length - 1; i >= 0; i--) {
-							if (i == idx){
-								sentences[i].setAttribute("style", "background-color: rgb(252 211 77);")  //bg-amber-300
-
-							}
-							else {
-								sentences[i].setAttribute("style", "")
-
-							}
-						}
-						console.log(sentences);
-					}
-					jsPlayer.updateSeek = function updateSeek() {
-						// jsPlayer.seek.value = 100 * jsPlayer.player.currentTime / jsPlayer.player.duration;
-						// jsPlayer.current.innerHTML = jsPlayer.formatTime(jsPlayer.player.currentTime);
-						// if (jsPlayer.playing) {
-						// 	jsPlayer.seeking = setTimeout(jsPlayer.updateSeek, 500);
-						// }
-					};
-					jsPlayer.formatTime = function formatTime(val) {
-						var h = 0, m = 0, s;
-						val = parseInt(val, 10);
-						if (val > 60 * 60) {
-							h = parseInt(val / (60 * 60), 10);
-							val -= h * 60 * 60;
-						}
-						if (val > 60) {
-							m = parseInt(val / 60, 10);
-							val -= m * 60;
-						}
-						s = val;
-						val = (h > 0)? h + ':' : '';
-						val += (m > 0)? ((m < 10 && h > 0)? '0' : '') + m + ':' : '0:';
-						val += ((s < 10)? '0' : '') + s;
-						return val;
-					};
 				}
 			}
 			if (jsPlayer.tracks.length > 0) {
@@ -293,12 +280,9 @@ function read(book_id, page, idx=0) {
 			}
 		};
 		jsPlayer.init();
+		// jsPlayer.playTrack(jsPlayer.idx)
 		jsPlayer.playClicked()
 	}
 
 }
 
-
-function clicky(page){
-	console.log("clickity click page - " + page)
-}
