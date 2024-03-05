@@ -1,5 +1,5 @@
-{ASR_config: speech2text/utils/ASR/config.yml, ASR_path: speech2text/utils/ASR/epoch_00080.pth, F0_path: speech2text/utils/JDC/bst.t7,
-  PLBERT_dir: speech2text/utils/PLBERT/, batch_size: 16, data_params: {OOD_data: Data/OOD_texts.txt,
+{ASR_config: text2speech/utils/ASR/config.yml, ASR_path: text2speech/utils/ASR/epoch_00080.pth, F0_path: text2speech/utils/JDC/bst.t7,
+  PLBERT_dir: text2speech/utils/PLBERT/, batch_size: 16, data_params: {OOD_data: Data/OOD_texts.txt,
     min_length: 50, root_path: /local/LJSpeech-1.1/wavs, train_data: Data/train_list.txt,
     val_data: Data/val_list.txt}, device: cuda, epochs_1st: 200, epochs_2nd: 100,
   first_stage_path: first_stage.pth, load_only_params: false, log_dir: Models/LJSpeech,

@@ -26,11 +26,11 @@ import torchaudio
 import librosa
 from nltk.tokenize import word_tokenize
 
-from speech2text.models.models import *
-from speech2text.utils.utils import *
-from speech2text.utils.text_utils import TextCleaner
-from speech2text.modules.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
-from speech2text.utils.PLBERT.util import load_plbert
+from text2speech.models.models import *
+from text2speech.utils.utils import *
+from text2speech.utils.text_utils import TextCleaner
+from text2speech.modules.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+from text2speech.utils.PLBERT.util import load_plbert
 from scipy.io.wavfile import write
 
 DEVICE = 'cpu'
@@ -47,7 +47,7 @@ class Reader(object):
     def __init__(self, *args, **kwargs):
         text_cleaner = TextCleaner()
         phonemizer = _phonemizer.backend.EspeakBackend(language='en-us', preserve_punctuation=True,  with_stress=True)
-        model_config = yaml.safe_load(open("speech2text/models/LJSpeech/config.yml"))
+        model_config = yaml.safe_load(open("text2speech/models/LJSpeech/config.yml"))
 
 
         # load pretrained ASR model
@@ -66,7 +66,7 @@ class Reader(object):
         _ = [model[key].to(DEVICE) for key in model]
 
 
-        params_whole = torch.load("speech2text/models/LJSpeech/epoch_2nd_00100.pth", map_location=DEVICE)
+        params_whole = torch.load("text2speech/models/LJSpeech/epoch_2nd_00100.pth", map_location=DEVICE)
         params = params_whole['net']
 
         for key in model:

@@ -6,7 +6,7 @@ import sys
 from flask_sqlalchemy import SQLAlchemy
 from config import DB_LOCAITON, UPLOAD_FOLDER, IMAGE_FOLDER, AUDIO_FOLDER
 from utils import clean_dir
-from speech2text.s2t import Reader
+from text2speech.s2t import Reader
 from flask import g, url_for
 import flask
 
