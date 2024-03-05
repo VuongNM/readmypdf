@@ -4,12 +4,17 @@ I write this project since I love audio books but sometimes the selection of boo
 
 ## Next up
 
- - Finer media control. I want to be able to rewind the previous sentence, previous passage instead of last 10 seconds.
- - Multi users with accounts and logins
- - Picking voices and option to do use your own voice.
+    - Clean up and documentation
 
 ## Installtion
+    - Install `espeak-ng` or `espeak`. Note that if you are on Mac M1. I suggest using Macport because homebrew will install espeak in a different architecture.
+    - install requirements `pip install -r ./requirement.txt`
 
+## Running
+
+
+    - `export PHONEMIZER_ESPEAK_LIBRARY=/opt/local/lib/libespeak-ng.dylib`
+    - `flask --app app.py --debug run`
 
 ## Screenshots 
 
