@@ -12,14 +12,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm, remove_weight_norm, spectral_norm
 
-from speech2text.utils.ASR.models import ASRCNN
-from speech2text.utils.JDC.model import JDCNet
+from text2speech.utils.ASR.models import ASRCNN
+from text2speech.utils.JDC.model import JDCNet
 
-from speech2text.modules.diffusion.sampler import KDiffusion, LogNormalDistribution
-from speech2text.modules.diffusion.modules import Transformer1d, StyleTransformer1d
-from speech2text.modules.diffusion.diffusion import AudioDiffusionConditional
+from text2speech.modules.diffusion.sampler import KDiffusion, LogNormalDistribution
+from text2speech.modules.diffusion.modules import Transformer1d, StyleTransformer1d
+from text2speech.modules.diffusion.diffusion import AudioDiffusionConditional
 
-from speech2text.modules.discriminators import MultiPeriodDiscriminator, MultiResSpecDiscriminator, WavLMDiscriminator
+from text2speech.modules.discriminators import MultiPeriodDiscriminator, MultiResSpecDiscriminator, WavLMDiscriminator
 
 from munch import Munch
 import yaml
@@ -615,7 +615,7 @@ def build_model(args, text_aligner, pitch_extractor, bert):
     assert args.decoder.type in ['istftnet', 'hifigan'], 'Decoder type unknown'
     
     if args.decoder.type == "istftnet":
-        from speech2text.modules.istftnet import Decoder
+        from text2speech.modules.istftnet import Decoder
         decoder = Decoder(dim_in=args.hidden_dim, style_dim=args.style_dim, dim_out=args.n_mels,
                 resblock_kernel_sizes = args.decoder.resblock_kernel_sizes,
                 upsample_rates = args.decoder.upsample_rates,
@@ -624,7 +624,7 @@ def build_model(args, text_aligner, pitch_extractor, bert):
                 upsample_kernel_sizes=args.decoder.upsample_kernel_sizes, 
                 gen_istft_n_fft=args.decoder.gen_istft_n_fft, gen_istft_hop_size=args.decoder.gen_istft_hop_size) 
     else:
-        from speech2text.modules.hifigan import Decoder
+        from text2speech.modules.hifigan import Decoder
         decoder = Decoder(dim_in=args.hidden_dim, style_dim=args.style_dim, dim_out=args.n_mels,
                 resblock_kernel_sizes = args.decoder.resblock_kernel_sizes,
                 upsample_rates = args.decoder.upsample_rates,
