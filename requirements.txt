@@ -1,0 +1,9 @@
+Flask==3.0.1
+SQLAlchemy==2.0.25
+Flask-SQLAlchemy==3.1.1
+sqlalchemy-mixins==2.0.5
+pdf2image==1.17.0
+PyPDF2==3.0.1
+pymupdf
+nltk==3.8.1
+numpy==1.22.0
